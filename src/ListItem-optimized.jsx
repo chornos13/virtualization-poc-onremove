@@ -1,22 +1,23 @@
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState } from "react";
 import { fetchContentById } from "./api";
+import React from "react";
 
-export function ListItemComponent({ data, onRemove }) {
+function ListItemComponent({ data, onRemove }) {
   const [content, setContent] = useState(data.contents);
   const [loading, setLoading] = useState(data.defer && content.length === 0);
 
   useEffect(() => {
     let cancelled = false;
-
     window.onRemove = onRemove;
 
     async function loadDeferredContent() {
+      console.log(data.defer, "dataid", data.id);
       if (data.defer && content.length === 0) {
         setLoading(true);
         const res = await fetchContentById(data.id);
         if (!cancelled) {
           if (res.contents.length === 0) {
-            onRemove(data.id); // Tell parent to remove
+            onRemove(data.id); // tell parent to remove
           } else {
             setContent(res.contents);
           }
@@ -29,7 +30,7 @@ export function ListItemComponent({ data, onRemove }) {
     return () => {
       cancelled = true;
     };
-  }, [data]);
+  }, [data, onRemove]);
 
   return (
     <div style={{ padding: "1rem", borderBottom: "1px solid #ddd" }}>
@@ -39,4 +40,5 @@ export function ListItemComponent({ data, onRemove }) {
   );
 }
 
-export const ListItem = memo(ListItemComponent, () => true);
+// Prevent re-renders if props don't change
+export const ListItem = React.memo(ListItemComponent);
