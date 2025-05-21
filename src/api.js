@@ -1,5 +1,5 @@
 // Simulate a paginated API with defer logic
-export async function fetchList(page = 1, limit = 20) {
+export async function fetchList(page = 1, limit = 10) {
   const start = (page - 1) * limit;
   const items = Array.from({ length: limit }, (_, i) => {
     const id = start + i + 1;
